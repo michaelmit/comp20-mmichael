@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Comp20: Assign-2</title>
+    <!-- Using Google Maps API, Geolocator and JSON -->
+</head>
+<body>
+    <!-- retrieve my position using Geolocator -->
+
+
+
+
+    <script>
+    // callbalk to retrieve my position
+    var myPos;
+    navigator.geolocation.getCurrentPosition(geoCallback);
+    function geoCallback (position) {
+        myPos = position.coords;
+        // console.log('Your current position is:');
+        // console.log(`Latitude : ${myPos.latitude}`);
+        // console.log(`Longitude: ${myPos.longitude}`);
+    }
+    </script>
+    
+</body>
+</html>
