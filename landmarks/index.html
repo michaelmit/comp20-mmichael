@@ -7,22 +7,93 @@
     <title>Comp20: Assign-2</title>
     <!-- Using Google Maps API, Geolocator and JSON -->
 </head>
-<body>
-    <!-- retrieve my position using Geolocator -->
+<body onload="loadMessages()">
+    <section 
+            <h1>Messages</h1>
+            <div id="messages">Loading...</div>
+    </section>
 
 
 
 
     <script>
     // callbalk to retrieve my position
-    var myPos;
-    navigator.geolocation.getCurrentPosition(geoCallback);
-    function geoCallback (position) {
-        myPos = position.coords;
-        // console.log('Your current position is:');
-        // console.log(`Latitude : ${myPos.latitude}`);
-        // console.log(`Longitude: ${myPos.longitude}`);
-    }
+    // retrieve my position using Geolocator
+
+    // var myPos;
+    // function geoCallback (position) {
+    //     navigator.geolocation.getCurrentPosition(geoCallback);
+    //     myPos = position.coords;
+    //     console.log('Your current position is:');
+    //     console.log(`Latitude : ${myPos.latitude}`);
+    //     console.log(`Longitude: ${myPos.longitude}`);
+    // }
+
+
+
+    // XMLHttp Request
+    function loadMessages() {
+
+
+            var myPos = {};
+            // navigator.geolocation.getCurrentPosition(geoCallback);
+            // function geoCallback (position) {
+            //     myPos = position.coords;
+            //     console.log('Your current position is:');
+            //     console.log(`Latitude : ${myPos.latitude}`);
+            //     console.log(`Longitude: ${myPos.longitude}`);
+            // }
+
+
+
+			// Step 1: Make an instance of XMLHttpRequest
+			request = new XMLHttpRequest();
+			// Step 2: Set up HTTP request
+			request.open("POST", "https://defense-in-derpth.herokuapp.com/sendLocation", true);
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            // request.send('param1=val1&param2=val2&param3=val3')
+
+
+			// Step 3: Set up callback on what to do when response is received
+	        request.onreadystatechange = function() {
+       	        // Step 3A: get the response text if and only if readyState is 4
+			    if (request.readyState == 4 && request.status == 200) {
+                    console.log("success");
+                    // Step 5: do something with the response data (i.e., the JSON)
+                    rawData = request.responseText;
+                    messages = JSON.parse(rawData);
+                    output = "<ul>";
+                    for (count = 0; count < messages.length; count++) {
+                        output += "<li>" + messages[count].content + " => " + messages[count].username + "</li>";
+                    }
+                    output += "</ul>";
+                    document.getElementById("messages").innerHTML = output;
+                }
+            }
+			// Step 4: Fire off the request
+            // var postMdg = JSON.stringify({ login: "KzQy5Jj1", lat : myPos.latitute, lng : myPos.longitude });
+            // request.send(postMsg);
+
+            myPos.latitude  = 42.4118037;
+            myPos.longitude = -71.11929529999999;
+
+            request.send("login=KzQy5Jj1&lat=myPos.latitute&lng=myPos.longitude");
+
+            console.log('Your current position is:');
+            console.log(`Latitude : ${myPos.latitude}`);
+            console.log(`Longitude: ${myPos.longitude}`);
+        }
+
+
+
+
+
+
+
+
+
+
+
     </script>
     
 </body>
