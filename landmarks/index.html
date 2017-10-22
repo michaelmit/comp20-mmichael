@@ -37,14 +37,14 @@
     // }
 
 
-    var myPos = {};
-    var created = false;
 
     // important globals
-    var messages;
-    var request;
-    var map;
-    var myInfoWindow;
+    var messages; // stores parsed JSON string in an object
+    var request;  // instance of XML HTTP Request
+    var map;      // instance of google map object
+    var myInfoWindow;  // google maps Info Window (popup for marker)
+    var myPos; // google maps coordinate object for my location
+    var landDist = []; // array to save calculated distances
 
     // ****************************************************************
 
@@ -67,20 +67,26 @@
 
     // ****************************************************************
 
+    // Get my coordinates (with security prompt)
+    function updateMyCoordinates() {
+            // Get my location using geo-location
+            navigator.geolocation.getCurrentPosition(geoCallback);
+            function geoCallback (position) {
+                myPos = position.coords;
+                console.log('Your current position is:');
+                console.log(`Latitude : ${myPos.latitude}`);
+                console.log(`Longitude: ${myPos.longitude}`);
+
+
+                // Call Asynchronous XMLHTTP Request function
+                loadMessages(); 
+            }
+    }
+
+
 
     // XMLHttp Request
     function loadMessages() {
-
-
-            // navigator.geolocation.getCurrentPosition(geoCallback);
-            // function geoCallback (position) {
-            //     myPos = position.coords;
-            //     console.log('Your current position is:');
-            //     console.log(`Latitude : ${myPos.latitude}`);
-            //     console.log(`Longitude: ${myPos.longitude}`);
-            // }
-
-
 
 			// Step 1: Make an instance of XMLHttpRequest
 			request = new XMLHttpRequest();
@@ -146,8 +152,10 @@
             // var postMdg = JSON.stringify({ login: "KzQy5Jj1", lat : myPos.latitute, lng : myPos.longitude });
             // request.send(postMsg);
 
-            myPos.latitude  = 42.4118037;
-            myPos.longitude = -71.11929529999999;
+            // myPos.latitude  = 42.4118037;
+            // myPos.longitude = -71.11929529999999;
+            
+            // myPos = new google.maps.LatLng(getLat, getLng); // Google Maps position object
 
             var la = "42.4118037";
             var lo = "-71.11929529999999";
@@ -197,7 +205,8 @@
         displayMarkers();
     }
     // google.maps.event.addDomListener(window, 'load', initialize);
-    google.maps.event.addDomListener(window, 'load', loadMessages);
+    // google.maps.event.addDomListener(window, 'load', loadMessages);
+    google.maps.event.addDomListener(window, 'load', updateMyCoordinates);
 
 
     // ****************************************************************
@@ -223,6 +232,12 @@
         var latlng = new google.maps.LatLng(getLat, getLng); // Google Maps position object
         var getName  = messages['landmarks'][prop]['properties']['Location_Name']; // Loc_Name
         var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
+
+        // Calculate distance between current landmark and myPos, save in array
+        // calcDist = google.maps.geometry.spherical.computeDistanceBetween(a,myPos)
+
+        landDist.push(2);
+
 
         // Call createMarker() to create the markers
         createMarker(latlng, getName, getDesc); 
