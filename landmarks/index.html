@@ -8,7 +8,7 @@
     <!-- Using Google Maps API, Geolocator and JSON -->
 </head>
 <body onload="loadMessages()">
-    <section 
+    <section>
             <h1>Messages</h1>
             <div id="messages">Loading...</div>
     </section>
@@ -50,9 +50,9 @@
 			request = new XMLHttpRequest();
 			// Step 2: Set up HTTP request
 			request.open("POST", "https://defense-in-derpth.herokuapp.com/sendLocation", true);
-            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            // request.send('param1=val1&param2=val2&param3=val3')
 
+            // request.send('param1=val1&param2=val2&param3=val3')
+            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
 			// Step 3: Set up callback on what to do when response is received
 	        request.onreadystatechange = function() {
@@ -61,13 +61,43 @@
                     console.log("success");
                     // Step 5: do something with the response data (i.e., the JSON)
                     rawData = request.responseText;
-                    messages = JSON.parse(rawData);
+
+                    var messages = JSON.parse(rawData);
+
+                    console.log(messages);
+                    if(typeof messages =='object')
+                    {
+                        console.log("It is JSON");
+                    }
+                    if(typeof messages == 'string')
+                    {
+                        console.log("It is String");
+                    }
+
+                    console.log(rawData.length);
+                    // output = "<ul>";
+                    // for (count = 0; count < messages.length; count++) {
+                    //     output += "<li>" + messages[count].content + " => " + messages[count].username + "</li>";
+                    // }
+                    // output += "</ul>";
+                    // document.getElementById("messages").innerHTML = output;
+
                     output = "<ul>";
-                    for (count = 0; count < messages.length; count++) {
-                        output += "<li>" + messages[count].content + " => " + messages[count].username + "</li>";
+                    for (count = 0; count < 10; count++) {
+                        {
+
+                            // output += "<li>" + "howdy" + "</li>" ;
+                            // for (i = 0; i < rawData["people"].length; i++) {
+                                 output += "<li>" + (messages['people'])[count]['login'] + "</li>" ;
+
+                        }
+                        // output += "<li>" + messages[count].people + " => " + messages[count].username + "</li>";
                     }
                     output += "</ul>";
                     document.getElementById("messages").innerHTML = output;
+
+
+
                 }
             }
 			// Step 4: Fire off the request
@@ -77,11 +107,17 @@
             myPos.latitude  = 42.4118037;
             myPos.longitude = -71.11929529999999;
 
-            request.send("login=KzQy5Jj1&lat=myPos.latitute&lng=myPos.longitude");
+            var la = "42.4118037";
+            var lo = "-71.11929529999999";
 
-            console.log('Your current position is:');
-            console.log(`Latitude : ${myPos.latitude}`);
-            console.log(`Longitude: ${myPos.longitude}`);
+            var params = "login=KzQy5Jj1&lat="+la+"&lng="+lo;
+            request.send(params);
+            // var params = "login=&=binny";
+
+
+            // console.log('Your current position is:');
+            // console.log(`Latitude : ${myPos.latitude}`);
+            // console.log(`Longitude: ${myPos.longitude}`);
         }
 
 
