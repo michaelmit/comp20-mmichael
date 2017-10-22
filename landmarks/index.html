@@ -38,10 +38,13 @@
 
 
     var myPos = {};
-    var map;
-    var messages;
     var created = false;
+
+    // important globals
+    var messages;
     var request;
+    var map;
+    var myInfoWindow;
 
     // ****************************************************************
 
@@ -177,17 +180,17 @@
         };
 
         //  Setup map object  - uses mapOptions
-        var map = new google.maps.Map(document.getElementById("map-canvas"),
+        map = new google.maps.Map(document.getElementById("map-canvas"),
         mapOptions);
 
         // Create new info-window
-        var infowindow = new google.maps.InfoWindow();
+        myInfoWindow = new google.maps.InfoWindow();
         // var infowindow = new google.maps.InfoWindow({
         // content: myContent });
 
         // Event that closes the InfoWindow with a click on the map
         google.maps.event.addListener(map, 'click', function() {
-            infoWindow.close();
+            myInfoWindow.close();
         });
 
         // Finally displayMarkers() function is called to begin the markers creation
@@ -204,11 +207,9 @@
     // This function will iterate over parsed JSON data (array of objects)
     // creates markers with createMarker()
     function displayMarkers() {
+ 
         // this variable sets the map bounds and zoom level according to markers position
         var bounds = new google.maps.LatLngBounds();
-        
-        // Marker’s Lat. and Lng. values are added to bounds variable
-        bounds.extend(latlng);
 
         // For loop that runs over the JOSN parsed - landmarks array
         // Used to create markers for landmarks 
@@ -226,19 +227,44 @@
         // Call createMarker() to create the markers
         createMarker(latlng, getName, getDesc); 
 
-
-        // this variable sets the map bounds and zoom level according to markers position
-        var bounds = new google.maps.LatLngBounds();
         // Marker’s Lat. and Lng. values are added to bounds variable
-        bounds.extend(latlng);
+        bounds.extend(latlng); 
+        }
+
+        // Finally the bounds variable is used to set the map bounds
+        // with API’s fitBounds() function
+        map.fitBounds(bounds);
 
     }
 
     // ****************************************************************
 
+    // ****************************************************************
+    // This function creates each marker and sets their Info Window content
+    function createMarker(latlng, name, description){
+        var marker = new google.maps.Marker({
+            map: map,
+            position: latlng,
+            title: name,
+            icon: icon_landmark // set new image
+        }); 
 
+        // This event expects a click on a marker
+        // When this event is fired the infowindow content is created
+        // and the infowindow is opened
+        google.maps.event.addListener(marker, 'click', function() {
+            // Variable to define the HTML content to be inserted in the infowindow
+            var iwContent = '<div id="iw_container">' +
+            '<div class="iw_title">' + name + '</div>' +
+            '<div class="iw_content">' + description + '<br />'; 
+            
+            // including content to the infowindow
+            myInfoWindow.setContent(iwContent);
 
-
+            // opening the infowindow in the current map and at the current marker location
+            myInfoWindow.open(map, marker);
+        });
+    }
 
 
     // ****************************************************************
@@ -277,32 +303,33 @@
 
     // ****************************************************************
     // This function creates each marker and sets their Info Window content
-    function createMarker(latlng, name, description){
-        var marker = new google.maps.Marker({
-            map: map,
-            position: latlng,
-            title: name,
-            icon: icon_landmark // set new image
-        });
+    // function createMarker(latlng, name, description){
+    //     var marker = new google.maps.Marker({
+    //         map: map,
+    //         position: latlng,
+    //         title: name,
+    //         icon: icon_landmark // set new image
+    //     });
 
-        // This event expects a click on a marker
-        // When this event is fired the infowindow content is created
-        // and the infowindow is opened
-        google.maps.event.addListener(marker, 'click', function() {
+    //     // This event expects a click on a marker
+    //     // When this event is fired the infowindow content is created
+    //     // and the infowindow is opened
+    //     google.maps.event.addListener(marker, 'click', function() {
             
-            // Variable to define the HTML content to be inserted in the infowindow
-            var iwContent = '<div id="iw_container">' +
-            '<div class="iw_title">' + name + '</div>' +
-            '<div class="iw_content">' + description + '<br />' +
+    //         // Variable to define the HTML content to be inserted in the infowindow
+    //         var iwContent = '<div id="iw_container">' +
+    //         '<div class="iw_title">' + name + '</div>' +
+    //         '<div class="iw_content">' + description + '<br />' +
             
-            // including content to the infowindow
-            infoWindow.setContent(iwContent);
+    //         // including content to the infowindow
+    //         infoWindow.setContent(iwContent);
 
-            // opening the infowindow in the current map and at the current marker location
-            infoWindow.open(map, marker);
-        });
-    }
+    //         // opening the infowindow in the current map and at the current marker location
+    //         infoWindow.open(map, marker);
+    //     });
+    // }
     // ****************************************************************
+    /*
 
     var infowindow = new google.maps.InfoWindow({
         content: myContent
@@ -315,6 +342,7 @@
         title:"My Location in Medford",
         icon: icon_person // set new image
     });
+    *
 
 
 
