@@ -34,12 +34,12 @@
     // }
 
 
+    var myPos = {};
 
     // XMLHttp Request
     function loadMessages() {
 
 
-            var myPos = {};
             // navigator.geolocation.getCurrentPosition(geoCallback);
             // function geoCallback (position) {
             //     myPos = position.coords;
@@ -124,23 +124,51 @@
             // console.log(`Longitude: ${myPos.longitude}`);
         }
 
-        // intialize map view
-        // Center on my location
+        // ******************************************************************
+        /*
+        * The code below will initialize a google maps view
+        * and center it at my geo-location.
+        * Map is placed on html div# "my-canvas"
+        * CSS for map is defined in css style sheet
+        */
         function initialize() {
             var mapOptions = {
-            center: new google.maps.LatLng(42.4118037,-71.11929529999999),
+            // center: new google.maps.LatLng(42.4118037,-71.11929529999999),
+            center: new google.maps.LatLng(myPos.latitude, myPos.longitude),
             zoom: 13,
             mapTypeId: google.maps.MapTypeId.ROADMAP
             };
-        var map = new google.maps.Map(document.getElementById("map-canvas"),
-        mapOptions);
-        // Update map and go there...
-	    // map.panTo(map);
+
+            var map = new google.maps.Map(document.getElementById("map-canvas"),
+            mapOptions);
+
+            // variable that sets the URL to the new image
+            var icon_person = {
+                url: "img/map-marker-person-1.png", // url
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+                origin: new google.maps.Point(0,0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            };
+
+           // my position marker 
+            var marker_myPos = new google.maps.Marker({
+                position: mapOptions.center,
+                map: map,
+                title:"My Location in Medford",
+                icon: icon_person // set new image
+            });
+
         }
         google.maps.event.addDomListener(window, 'load', initialize);
 
+        // ******************************************************************
 
 
+        // ******************************************************************
+        /*
+        * The code below will add a marker for my geo-location 
+        * A custom icon is used that represents all people on this map
+        */
 
 
 
