@@ -8,13 +8,12 @@
     <title>Assign-2</title>
     <!-- Using Google Maps API, Geolocator and JSON -->
     <link rel="stylesheet" type="text/css" href="mystyle.css"/> 
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
-
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3g6lBTfTWoVHydAM8tSe9GZT9lmet8Oc&libraries=geometry"></script>
 </head>
     <!-- <body onload="loadMessages()"> -->
     <body>
     <section>
-            <h1>Messages</h1>
+            <h1>Google Maps</h1>
             <div id="messages">Loading...</div>
     </section>
 
@@ -72,10 +71,12 @@
             // Get my location using geo-location
             navigator.geolocation.getCurrentPosition(geoCallback);
             function geoCallback (position) {
-                myPos = position.coords;
+                pos = position.coords;
                 console.log('Your current position is:');
-                console.log(`Latitude : ${myPos.latitude}`);
-                console.log(`Longitude: ${myPos.longitude}`);
+                console.log(`Latitude : ${pos.latitude}`);
+                console.log(`Longitude: ${pos.longitude}`);
+
+                myPos = new google.maps.LatLng(pos.latitude, pos.longitude) 
 
 
                 // Call Asynchronous XMLHTTP Request function
@@ -182,7 +183,8 @@
 
         // Setup map options to create new google map
         var mapOptions = {
-        center: new google.maps.LatLng(myPos.latitude, myPos.longitude),
+        // center: new google.maps.LatLng(myPos.latitude, myPos.longitude),
+        center: myPos, 
         zoom: 13,
         mapTypeId: google.maps.MapTypeId.ROADMAP
         };
@@ -206,6 +208,8 @@
     }
     // google.maps.event.addDomListener(window, 'load', initialize);
     // google.maps.event.addDomListener(window, 'load', loadMessages);
+
+    // IMPORTANT: when global window loads, call asynchronous geolocation function
     google.maps.event.addDomListener(window, 'load', updateMyCoordinates);
 
 
@@ -234,9 +238,9 @@
         var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
 
         // Calculate distance between current landmark and myPos, save in array
-        // calcDist = google.maps.geometry.spherical.computeDistanceBetween(a,myPos)
-
-        landDist.push(2);
+        calcDist = google.maps.geometry.spherical.computeDistanceBetween(latlng,myPos);
+        // push to an array ..... save index prop?
+        landDist.push(calcDist);
 
 
         // Call createMarker() to create the markers
@@ -249,6 +253,10 @@
         // Finally the bounds variable is used to set the map bounds
         // with API’s fitBounds() function
         map.fitBounds(bounds);
+
+        // temp
+        console.log("The calculated distances");
+        console.log(landDist);
 
     }
 
