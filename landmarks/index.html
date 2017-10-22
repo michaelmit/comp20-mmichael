@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <title>Assign-2</title>
+    <!-- Using Google Maps API, Geolocator and JSON -->
     <link rel="stylesheet" type="text/css" href="mystyle.css"/> 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
-    <!-- Using Google Maps API, Geolocator and JSON -->
+
 </head>
-    <body onload="loadMessages()">
+    <!-- <body onload="loadMessages()"> -->
+    <body>
     <section>
             <h1>Messages</h1>
             <div id="messages">Loading...</div>
@@ -36,6 +39,9 @@
 
     var myPos = {};
     var map;
+    var messages;
+    var created = false;
+    var request;
 
     // XMLHttp Request
     function loadMessages() {
@@ -67,7 +73,7 @@
                     // Step 5: do something with the response data (i.e., the JSON)
                     rawData = request.responseText;
 
-                    var messages = JSON.parse(rawData);
+                    messages = JSON.parse(rawData);
 
                     console.log(messages);
                     if(typeof messages =='object')
@@ -101,6 +107,11 @@
                     output += "</ul>";
                     document.getElementById("messages").innerHTML = output;
 
+                    // moving map creation here temporarily
+                    created = true;
+                    console.log("created is:", created);
+
+                    initialize();
 
 
                 }
@@ -143,6 +154,9 @@
             var map = new google.maps.Map(document.getElementById("map-canvas"),
             mapOptions);
 
+
+            // ****************************************************************
+
             // variable that sets the URL to the new image
             var icon_person = {
                 url: "img/map-marker-person-1.png", // url
@@ -151,7 +165,39 @@
                 anchor: new google.maps.Point(0, 0) // anchor
             };
 
-           // my position marker 
+            // variable that sets the URL to the new image
+            var icon_landmark = {
+                url: "img/map-marker-place-1.png", // url
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+                origin: new google.maps.Point(0,0), // origin
+                anchor: new google.maps.Point(0, 0) // anchor
+            };
+
+
+
+            // ****************************************************************
+            if (request.readyState == 4 && request.status == 200) {
+                console.log("in map, created is:", created);
+            }
+            if (messages != null) {
+                var land_len = (messages['people']).length; // length of array of objects
+                console.log("length of people array obj" , land_len);
+            }
+            // for (var prop in messages['landmarks']) { // each object
+            //     if (! messages['landmarks'].hasOwnProperty(prop)) {
+            //         continue;
+            //     }
+            //     // console.log("leng of array", land_len);
+            //     console.log("Longitude:", prop['geometry']['coordinates'][0]);
+            //     // console.log("Longitude:", prop['geometry']['coordinates'][0]);
+            // }
+
+
+
+
+            // ****************************************************************
+
+            // my position marker 
             var marker_myPos = new google.maps.Marker({
                 position: mapOptions.center,
                 map: map,
@@ -165,8 +211,10 @@
             '<div class="iw_content">Green Treelined Residential Avenue' +
             '</div>';
 
+            // ****************************************************************
+
             var infowindow = new google.maps.InfoWindow({
-            content: content
+                content: content
             });
 
             google.maps.event.addListener(marker_myPos, 'click', function() {
@@ -179,9 +227,9 @@
             });
 
 
-
         }
-        google.maps.event.addDomListener(window, 'load', initialize);
+        // google.maps.event.addDomListener(window, 'load', initialize);
+        google.maps.event.addDomListener(window, 'load', loadMessages);
 
 
 
