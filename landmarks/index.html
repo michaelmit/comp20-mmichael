@@ -43,6 +43,28 @@
     var created = false;
     var request;
 
+    // ****************************************************************
+
+    // variable that sets the URL to the new image
+    var icon_person = {
+        url: "img/map-marker-person-1.png", // url
+        scaledSize: new google.maps.Size(50, 50), // scaled size
+        origin: new google.maps.Point(0,0), // origin
+        anchor: new google.maps.Point(0, 0) // anchor
+    };
+
+    // variable that sets the URL to the new image
+    var icon_landmark = {
+        url: "img/map-marker-place-1.png", // url
+        scaledSize: new google.maps.Size(35, 35), // scaled size
+        origin: new google.maps.Point(0,0), // origin
+        anchor: new google.maps.Point(0, 0) // anchor
+    };
+
+
+    // ****************************************************************
+
+
     // XMLHttp Request
     function loadMessages() {
 
@@ -111,6 +133,7 @@
                     created = true;
                     console.log("created is:", created);
 
+                    // IMPORTANT: map initializer called only after recieving JSON Map Data
                     initialize();
 
 
@@ -128,159 +151,197 @@
 
             var params = "login=KzQy5Jj1&lat="+la+"&lng="+lo;
             request.send(params);
-            // var params = "login=&=binny";
 
 
             // console.log('Your current position is:');
             // console.log(`Latitude : ${myPos.latitude}`);
             // console.log(`Longitude: ${myPos.longitude}`);
+    }
+
+    // ****************************************************************
+    // ****************************************************************
+    /*
+    * The code below will initialize a google maps view
+    * and center it at my geo-location.
+    * Map is placed on html div# "my-canvas"
+    * CSS for map is defined in css style sheet
+    * Note: called inside loadMessages() after XMLHTTPRequest Done
+    */
+    function initialize() {
+
+        // Setup map options to create new google map
+        var mapOptions = {
+        center: new google.maps.LatLng(myPos.latitude, myPos.longitude),
+        zoom: 13,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        //  Setup map object  - uses mapOptions
+        var map = new google.maps.Map(document.getElementById("map-canvas"),
+        mapOptions);
+
+        // Create new info-window
+        var infowindow = new google.maps.InfoWindow();
+        // var infowindow = new google.maps.InfoWindow({
+        // content: myContent });
+
+        // Event that closes the InfoWindow with a click on the map
+        google.maps.event.addListener(map, 'click', function() {
+            infoWindow.close();
+        });
+
+        // Finally displayMarkers() function is called to begin the markers creation
+        displayMarkers();
+    }
+    // google.maps.event.addDomListener(window, 'load', initialize);
+    google.maps.event.addDomListener(window, 'load', loadMessages);
+
+
+    // ****************************************************************
+
+
+    // ****************************************************************
+    // This function will iterate over parsed JSON data (array of objects)
+    // creates markers with createMarker()
+    function displayMarkers() {
+        // this variable sets the map bounds and zoom level according to markers position
+        var bounds = new google.maps.LatLngBounds();
+        
+        // Marker’s Lat. and Lng. values are added to bounds variable
+        bounds.extend(latlng);
+
+        // For loop that runs over the JOSN parsed - landmarks array
+        // Used to create markers for landmarks 
+        for (var prop in messages['landmarks']) { // each object
+        if (! messages['landmarks'].hasOwnProperty(prop)) {
+                continue;
         }
+        // Get Attributes for each Landmark
+        var getLng = messages['landmarks'][prop]['geometry']['coordinates'][0]; // Longitude
+        var getLat  = messages['landmarks'][prop]['geometry']['coordinates'][1]; // Latitude
+        var latlng = new google.maps.LatLng(getLat, getLng); // Google Maps position object
+        var getName  = messages['landmarks'][prop]['properties']['Location_Name']; // Loc_Name
+        var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
 
-        // ******************************************************************
-        /*
-        * The code below will initialize a google maps view
-        * and center it at my geo-location.
-        * Map is placed on html div# "my-canvas"
-        * CSS for map is defined in css style sheet
-        */
-        function initialize() {
-            var mapOptions = {
-            center: new google.maps.LatLng(myPos.latitude, myPos.longitude),
-            zoom: 13,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-
-            //  Setup map object  - uses mapOptions
-            var map = new google.maps.Map(document.getElementById("map-canvas"),
-            mapOptions);
+        // Call createMarker() to create the markers
+        createMarker(latlng, getName, getDesc); 
 
 
-            // ****************************************************************
+        // this variable sets the map bounds and zoom level according to markers position
+        var bounds = new google.maps.LatLngBounds();
+        // Marker’s Lat. and Lng. values are added to bounds variable
+        bounds.extend(latlng);
 
-            // variable that sets the URL to the new image
-            var icon_person = {
-                url: "img/map-marker-person-1.png", // url
-                scaledSize: new google.maps.Size(50, 50), // scaled size
-                origin: new google.maps.Point(0,0), // origin
-                anchor: new google.maps.Point(0, 0) // anchor
-            };
+    }
 
-            // variable that sets the URL to the new image
-            var icon_landmark = {
-                url: "img/map-marker-place-1.png", // url
-                scaledSize: new google.maps.Size(35, 35), // scaled size
-                origin: new google.maps.Point(0,0), // origin
-                anchor: new google.maps.Point(0, 0) // anchor
-            };
-
-
-
-            // ****************************************************************
-            if (request.readyState == 4 && request.status == 200) {
-                console.log("in map, created is:", created);
-            }
-            if (messages != null) {
-                var land_len = (messages['people']).length; // length of array of objects
-                console.log("length of people array obj" , land_len);
-            }
-            for (var prop in messages['landmarks']) { // each object
-                if (! messages['landmarks'].hasOwnProperty(prop)) {
-                     continue;
-                }
-                // Get Attributes for each Landmark
-                var getLng = messages['landmarks'][prop]['geometry']['coordinates'][0]; // Longitude
-                var getLat  = messages['landmarks'][prop]['geometry']['coordinates'][1]; // Latitude
-                var latlng = new google.maps.LatLng(getLat, getLng); // Google Maps position object
-                var getName  = messages['landmarks'][prop]['properties']['Location_Name']; // Loc_Name
-                var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
-                createMarker(latlng, getName, getDesc);
-
-                // this variable sets the map bounds and zoom level according to markers position
-                var bounds = new google.maps.LatLngBounds();
-                // Marker’s Lat. and Lng. values are added to bounds variable
-                bounds.extend(latlng);
-
-            }
-
-            // Finally the bounds variable is used to set the map bounds
-            // with API’s fitBounds() function
-            map.fitBounds(bounds);
+    // ****************************************************************
 
 
 
 
-            // ****************************************************************
-            // This function creates each marker and sets their Info Window content
-            function createMarker(latlng, name, description){
-            var marker = new google.maps.Marker({
-                map: map,
-                position: latlng,
-                title: name,
-                icon: icon_landmark // set new image
-            });
 
-            // This event expects a click on a marker
-            // When this event is fired the infowindow content is created
-            // and the infowindow is opened
-            google.maps.event.addListener(marker, 'click', function() {
-                
-                // Variable to define the HTML content to be inserted in the infowindow
-                var iwContent = '<div id="iw_container">' +
-                '<div class="iw_title">' + name + '</div>' +
-                '<div class="iw_content">' + description + '<br />' +
-                
-                // including content to the infowindow
-                infoWindow.setContent(iwContent);
 
-                // opening the infowindow in the current map and at the current marker location
-                infoWindow.open(map, marker);
-            });
-            }
-            // ****************************************************************
+    // ****************************************************************
+    // if (request.readyState == 4 && request.status == 200) {
+    //     console.log("in map, created is:", created);
+    // }
+    // if (messages != null) {
+    //     var land_len = (messages['people']).length; // length of array of objects
+    //     console.log("length of people array obj" , land_len);
+    // }
+    // for (var prop in messages['landmarks']) { // each object
+    //     if (! messages['landmarks'].hasOwnProperty(prop)) {
+    //             continue;
+    //     }
+    //     // Get Attributes for each Landmark
+    //     var getLng = messages['landmarks'][prop]['geometry']['coordinates'][0]; // Longitude
+    //     var getLat  = messages['landmarks'][prop]['geometry']['coordinates'][1]; // Latitude
+    //     var latlng = new google.maps.LatLng(getLat, getLng); // Google Maps position object
+    //     var getName  = messages['landmarks'][prop]['properties']['Location_Name']; // Loc_Name
+    //     var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
+    //     createMarker(latlng, getName, getDesc);
 
-            // my position marker 
-            var marker_myPos = new google.maps.Marker({
-                position: mapOptions.center,
-                map: map,
-                title:"My Location in Medford",
-                icon: icon_person // set new image
-            });
+    //     // this variable sets the map bounds and zoom level according to markers position
+    //     var bounds = new google.maps.LatLngBounds();
+    //     // Marker’s Lat. and Lng. values are added to bounds variable
+    //     bounds.extend(latlng);
 
-            var marker_land = new google.maps.Marker({
-                position: mapOptions.center,
-                map: map,
-                title: getName, 
-                icon: icon_landmark // set new image
-            });
+    // }
+
+    // // Finally the bounds variable is used to set the map bounds
+    // // with API’s fitBounds() function
+    // map.fitBounds(bounds);
 
 
 
 
-            // my infoWindow
-            var myContent = '<div id="iw_container">' +
-            '<div class="iw_title">My Location</div>' +
-            '<div class="iw_content">Green Treelined Residential Avenue' +
-            '</div>';
+    // ****************************************************************
+    // This function creates each marker and sets their Info Window content
+    function createMarker(latlng, name, description){
+        var marker = new google.maps.Marker({
+            map: map,
+            position: latlng,
+            title: name,
+            icon: icon_landmark // set new image
+        });
 
-            // ****************************************************************
+        // This event expects a click on a marker
+        // When this event is fired the infowindow content is created
+        // and the infowindow is opened
+        google.maps.event.addListener(marker, 'click', function() {
+            
+            // Variable to define the HTML content to be inserted in the infowindow
+            var iwContent = '<div id="iw_container">' +
+            '<div class="iw_title">' + name + '</div>' +
+            '<div class="iw_content">' + description + '<br />' +
+            
+            // including content to the infowindow
+            infoWindow.setContent(iwContent);
 
-            var infowindow = new google.maps.InfoWindow({
-                content: myContent
-            });
+            // opening the infowindow in the current map and at the current marker location
+            infoWindow.open(map, marker);
+        });
+    }
+    // ****************************************************************
 
-            google.maps.event.addListener(marker_myPos, 'click', function() {
-            infowindow.open(map,marker_myPos);
-            });
+    var infowindow = new google.maps.InfoWindow({
+        content: myContent
+    });
 
-            // event to close the infoWindow with a click on the map
-            google.maps.event.addListener(map, 'click', function() {
-            infowindow.close();
-            });
+    // my position marker 
+    var marker_myPos = new google.maps.Marker({
+        position: mapOptions.center,
+        map: map,
+        title:"My Location in Medford",
+        icon: icon_person // set new image
+    });
 
 
-        }
-        // google.maps.event.addDomListener(window, 'load', initialize);
-        google.maps.event.addDomListener(window, 'load', loadMessages);
+
+
+
+    // my infoWindow
+    var myContent = '<div id="iw_container">' +
+    '<div class="iw_title">My Location</div>' +
+    '<div class="iw_content">Green Treelined Residential Avenue' +
+    '</div>';
+
+    // ****************************************************************
+
+
+
+    google.maps.event.addListener(marker_myPos, 'click', function() {
+    infowindow.open(map,marker_myPos);
+    });
+
+    // event to close the infoWindow with a click on the map
+    google.maps.event.addListener(map, 'click', function() {
+    infowindow.close();
+    });
+
+
+}
+    // google.maps.event.addDomListener(window, 'load', loadMessages);
 
 
 
