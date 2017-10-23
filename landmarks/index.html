@@ -248,7 +248,7 @@
 
         // push to an array ..... save index prop?
 
-        landDist.push([getName, calcDist]);
+        landDist.push([getName, calcDist, latlng]);
 
 
         // Call createMarker() to create the markers
@@ -326,6 +326,27 @@
 
         getLandmarks();
         getPeople();
+
+
+
+        // my position coordinates
+        // start_lat = myPos.latitude;
+        // start_lng = myPos.longitude;
+        // pathX = [{-12.044012922866312: -77.02470665341184}, {-12.05449279282314: -77.03024273281858} ];
+
+         var landmarkCoordinates = [
+           myPos,          // my position
+           landDist[0][2]  // nearest Landmark
+         ];
+        var landmarkPath = new google.maps.Polyline({
+           path: landmarkCoordinates,
+           geodesic: true,
+           strokeColor: '#FF0000',
+           strokeOpacity: 2.0,
+           strokeWeight: 5
+         });
+
+        landmarkPath.setMap(map);
  
         // // this variable sets the map bounds and zoom level according to markers position
         // var bounds = new google.maps.LatLngBounds();
