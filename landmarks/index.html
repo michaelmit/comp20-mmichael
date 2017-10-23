@@ -13,7 +13,8 @@
     <!-- <body onload="loadMessages()"> -->
     <body>
     <section>
-            <h1>Google Maps</h1>
+            <h1>Comp 20 -  Assignment 2: Historic Landmarks </h1>
+            <h2>Google Maps</h2>
             <div id="messages">Loading...</div>
     </section>
 
@@ -23,17 +24,6 @@
 
 
     <script>
-    // callbalk to retrieve my position
-    // retrieve my position using Geolocator
-
-    // var myPos;
-    // function geoCallback (position) {
-    //     navigator.geolocation.getCurrentPosition(geoCallback);
-    //     myPos = position.coords;
-    //     console.log('Your current position is:');
-    //     console.log(`Latitude : ${myPos.latitude}`);
-    //     console.log(`Longitude: ${myPos.longitude}`);
-    // }
 
 
 
@@ -43,6 +33,7 @@
     var map;      // instance of google map object
     var myInfoWindow;  // google maps Info Window (popup for marker)
     var myPos; // google maps coordinate object for my location
+    var pos;   // my coordinates position
     var landDist = []; // array to save calculated distances
 
     // ****************************************************************
@@ -79,9 +70,9 @@
             navigator.geolocation.getCurrentPosition(geoCallback);
             function geoCallback (position) {
                 pos = position.coords;
-                console.log('Your current position is:');
-                console.log(`Latitude : ${pos.latitude}`);
-                console.log(`Longitude: ${pos.longitude}`);
+                // console.log('Your current position is:');
+                // console.log(`Latitude : ${pos.latitude}`);
+                // console.log(`Longitude: ${pos.longitude}`);
 
                 myPos = new google.maps.LatLng(pos.latitude, pos.longitude) 
 
@@ -108,47 +99,14 @@
 	        request.onreadystatechange = function() {
        	        // Step 3A: get the response text if and only if readyState is 4
 			    if (request.readyState == 4 && request.status == 200) {
-                    console.log("success");
+
                     // Step 5: do something with the response data (i.e., the JSON)
                     rawData = request.responseText;
 
                     messages = JSON.parse(rawData);
 
-                    console.log(messages);
-                    if(typeof messages =='object')
-                    {
-                        console.log("It is JSON");
-                    }
-                    if(typeof messages == 'string')
-                    {
-                        console.log("It is String");
-                    }
+                    document.getElementById("messages").innerHTML = "Data Loaded ... Welcome";
 
-                    console.log(rawData.length);
-                    // output = "<ul>";
-                    // for (count = 0; count < messages.length; count++) {
-                    //     output += "<li>" + messages[count].content + " => " + messages[count].username + "</li>";
-                    // }
-                    // output += "</ul>";
-                    // document.getElementById("messages").innerHTML = output;
-
-                    output = "<ul>";
-                    for (count = 0; count < 10; count++) {
-                        {
-
-                            // output += "<li>" + "howdy" + "</li>" ;
-                            // for (i = 0; i < rawData["people"].length; i++) {
-                                 output += "<li>" + (messages['people'])[count]['login'] + "</li>" ;
-
-                        }
-                        // output += "<li>" + messages[count].people + " => " + messages[count].username + "</li>";
-                    }
-                    output += "</ul>";
-                    document.getElementById("messages").innerHTML = output;
-
-                    // moving map creation here temporarily
-                    created = true;
-                    console.log("created is:", created);
 
                     // IMPORTANT: map initializer called only after recieving JSON Map Data
                     initialize();
@@ -157,24 +115,13 @@
                 }
             }
 			// Step 4: Fire off the request
-            // var postMdg = JSON.stringify({ login: "KzQy5Jj1", lat : myPos.latitute, lng : myPos.longitude });
-            // request.send(postMsg);
+            var la = ""+pos.latitude;    // My latitude from geolocation
+            var lo = ""+pos.longitude;   // My longitude from geolocation
 
-            // myPos.latitude  = 42.4118037;
-            // myPos.longitude = -71.11929529999999;
-            
-            // myPos = new google.maps.LatLng(getLat, getLng); // Google Maps position object
-
-            var la = "42.4118037";
-            var lo = "-71.11929529999999";
-
-            var params = "login=KzQy5Jj1&lat="+la+"&lng="+lo;
-            request.send(params);
+            var params = "login=KzQy5Jj1&lat="+la+"&lng="+lo; // string query for POST
+            request.send(params);       // POST XMLHTTP Request
 
 
-            // console.log('Your current position is:');
-            // console.log(`Latitude : ${myPos.latitude}`);
-            // console.log(`Longitude: ${myPos.longitude}`);
     }
 
     // ****************************************************************
@@ -184,7 +131,6 @@
     * and center it at my geo-location.
     * Map is placed on html div# "my-canvas"
     * CSS for map is defined in css style sheet
-    * Note: called inside loadMessages() after XMLHTTPRequest Done
     */
     function initialize() {
 
@@ -213,8 +159,8 @@
         // Finally displayMarkers() function is called to begin the markers creation
         displayMarkers();
     }
-    // google.maps.event.addDomListener(window, 'load', initialize);
-    // google.maps.event.addDomListener(window, 'load', loadMessages);
+
+    // ****************************************************************
 
     // IMPORTANT: when global window loads, call asynchronous geolocation function
     google.maps.event.addDomListener(window, 'load', updateMyCoordinates);
@@ -324,15 +270,13 @@
     // creates markers with createMarker()
     function displayMarkers() {
 
-        getLandmarks();
-        getPeople();
+        getLandmarks(); // get all landmarks from JSON
+        getPeople();    // get all persons from JSON
 
 
-
-        // my position coordinates
-        // start_lat = myPos.latitude;
-        // start_lng = myPos.longitude;
-        // pathX = [{-12.044012922866312: -77.02470665341184}, {-12.05449279282314: -77.03024273281858} ];
+        // *************************************************************
+        // Setting up coordinates for polyline between my position 
+        // and nearest landmark
 
          var landmarkCoordinates = [
            myPos,          // my position
@@ -348,44 +292,7 @@
 
         landmarkPath.setMap(map);
  
-        // // this variable sets the map bounds and zoom level according to markers position
-        // var bounds = new google.maps.LatLngBounds();
 
-        // // For loop that runs over the JOSN parsed - landmarks array
-        // // Used to create markers for landmarks 
-        // for (var prop in messages['landmarks']) { // each object
-        // if (! messages['landmarks'].hasOwnProperty(prop)) {
-        //         continue;
-        // }
-        // // Get Attributes for each Landmark
-        // var getLng = messages['landmarks'][prop]['geometry']['coordinates'][0]; // Longitude
-        // var getLat  = messages['landmarks'][prop]['geometry']['coordinates'][1]; // Latitude
-        // var latlng = new google.maps.LatLng(getLat, getLng); // Google Maps position object
-        // var getName  = messages['landmarks'][prop]['properties']['Location_Name']; // Loc_Name
-        // var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
-
-        // // Calculate distance between current landmark and myPos, save in array
-        // calcDist = google.maps.geometry.spherical.computeDistanceBetween(latlng,myPos);
-        // // convert meters to miles
-        // calcDist *= 0.000621371;
-        // // push to an array ..... save index prop?
-        // landDist.push(calcDist);
-
-
-        // // Call createMarker() to create the markers
-        // createMarker(latlng, getName, getDesc); 
-
-        // // Marker’s Lat. and Lng. values are added to bounds variable
-        // bounds.extend(latlng); 
-        // }
-
-        // // Finally the bounds variable is used to set the map bounds
-        // // with API’s fitBounds() function
-        // map.fitBounds(bounds);
-
-        // // temp
-        // console.log("The calculated distances");
-        // console.log(landDist);
 
     }
 
@@ -420,125 +327,7 @@
         });
     }
 
-
-    // ****************************************************************
-    // if (request.readyState == 4 && request.status == 200) {
-    //     console.log("in map, created is:", created);
-    // }
-    // if (messages != null) {
-    //     var land_len = (messages['people']).length; // length of array of objects
-    //     console.log("length of people array obj" , land_len);
-    // }
-    // for (var prop in messages['landmarks']) { // each object
-    //     if (! messages['landmarks'].hasOwnProperty(prop)) {
-    //             continue;
-    //     }
-    //     // Get Attributes for each Landmark
-    //     var getLng = messages['landmarks'][prop]['geometry']['coordinates'][0]; // Longitude
-    //     var getLat  = messages['landmarks'][prop]['geometry']['coordinates'][1]; // Latitude
-    //     var latlng = new google.maps.LatLng(getLat, getLng); // Google Maps position object
-    //     var getName  = messages['landmarks'][prop]['properties']['Location_Name']; // Loc_Name
-    //     var getDesc  = messages['landmarks'][prop]['properties']['Details']; // Loc_Description
-    //     createMarker(latlng, getName, getDesc);
-
-    //     // this variable sets the map bounds and zoom level according to markers position
-    //     var bounds = new google.maps.LatLngBounds();
-    //     // Marker’s Lat. and Lng. values are added to bounds variable
-    //     bounds.extend(latlng);
-
-    // }
-
-    // // Finally the bounds variable is used to set the map bounds
-    // // with API’s fitBounds() function
-    // map.fitBounds(bounds);
-
-
-
-
-    // ****************************************************************
-    // This function creates each marker and sets their Info Window content
-    // function createMarker(latlng, name, description){
-    //     var marker = new google.maps.Marker({
-    //         map: map,
-    //         position: latlng,
-    //         title: name,
-    //         icon: icon_landmark // set new image
-    //     });
-
-    //     // This event expects a click on a marker
-    //     // When this event is fired the infowindow content is created
-    //     // and the infowindow is opened
-    //     google.maps.event.addListener(marker, 'click', function() {
-            
-    //         // Variable to define the HTML content to be inserted in the infowindow
-    //         var iwContent = '<div id="iw_container">' +
-    //         '<div class="iw_title">' + name + '</div>' +
-    //         '<div class="iw_content">' + description + '<br />' +
-            
-    //         // including content to the infowindow
-    //         infoWindow.setContent(iwContent);
-
-    //         // opening the infowindow in the current map and at the current marker location
-    //         infoWindow.open(map, marker);
-    //     });
-    // }
-    // ****************************************************************
-    /*
-
-    var infowindow = new google.maps.InfoWindow({
-        content: myContent
-    });
-
-    // my position marker 
-    var marker_myPos = new google.maps.Marker({
-        position: mapOptions.center,
-        map: map,
-        title:"My Location in Medford",
-        icon: icon_person // set new image
-    });
-    *
-
-
-
-
-
-    // my infoWindow
-    var myContent = '<div id="iw_container">' +
-    '<div class="iw_title">My Location</div>' +
-    '<div class="iw_content">Green Treelined Residential Avenue' +
-    '</div>';
-
-    // ****************************************************************
-
-
-
-    google.maps.event.addListener(marker_myPos, 'click', function() {
-    infowindow.open(map,marker_myPos);
-    });
-
-    // event to close the infoWindow with a click on the map
-    google.maps.event.addListener(map, 'click', function() {
-    infowindow.close();
-    });
-
-
-}
-    // google.maps.event.addDomListener(window, 'load', loadMessages);
-
-
-
-        // ******************************************************************
-
-
-        // ******************************************************************
-        /*
-        * The code below will add a marker for my geo-location 
-        * A custom icon is used that represents all people on this map
-        */
-
-
-
-
+   
 
     </script>
     
