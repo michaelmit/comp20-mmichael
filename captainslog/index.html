@@ -9,70 +9,40 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- the jQuery file is from a Content Delivery Network (CDN) -->
     <script>
-         // Your work will be done here...
-
-         var data = {};
+         var data = {}; 
          var k = 0;
          $(document).ready(load);
          // callback executed after DOM is loaded
 
         function load() {
-                // alert("I'm being called");
+            // on key press down even
+            $("#msg").on("keydown",function search(e) {
+                if(e.keyCode == 13) { // enter key pressed
+                    // alert($(this).val());
+                    datetime = new Date();
+                    data[k] = $(this).val();
 
-                // get data fron input box
-                // $("#msg").on("input", function() {
-                //     alert($(this).val()); 
-                // });
-                $("#msg").on("keydown",function search(e) {
-                    if(e.keyCode == 13) { // enter key pressed
-                        // alert($(this).val());
-                        datetime = new Date();
-                        data[k] = $(this).val();
-                        // $('#log').append("<p>"  + datetime.toString() + " - " + data[i] +  "!</p>");   // Date.now()
-                        var key = Date.now();
-                        var value = "<p>"  + datetime.toString() + " - " + data[k] +  "!</p>";
-                        localStorage.setItem(key, value); 
+                    var key = Date.now();
+                    var value = "<p>"  + datetime.toString() + " - " + data[k] +  "!</p>";
+                    localStorage.setItem(key, value); 
 
-                        console.log("inside writing to LocalStorage");
-                        k++;
+                    k++;
 
 
-                        // reset div
-                        $("#log").empty();
+                    // reset div
+                    $("#log").empty();
 
-                        // append to div
-                        readFromStorage();
+                    // append to div after reading from local storage
+                    readFromStorage();
 
-                    }
-
-                });
-
-
-
-
-                
-
-                var str = $ ('#msg').val() ;
-                // $( "#log" ).text("<p>This is a test.</p>" );
-                // data = {key1:"val1", key2:"val2"};
-                for (var key in data) {
-                if (data.hasOwnProperty(key)) {
-                    $('#log').append("<p>" + data[key] + "!</p>");
-                }
                 }
 
-                // $( "#log" ).text("This is a test." );
-                // $('#log').append("<p>this text was appended</p>");
-                // $('#log').append("<p>this text was appended afterwards</p>");
-                console.log(str);
-
+            });
 
         }
 
 
         function readFromStorage() {
-            console.log("inside Retrieve from LocalStorage");
-            console.log(data);
 
             var arrKeys = [];
             
@@ -80,16 +50,9 @@
                 arrKeys[j] = parseInt(localStorage.key(j));
             }
 
-
-            console.log("before sort", arrKeys);
-
-
-            console.log(arrKeys);
             // sort keys in reverse order [ Note that key are time values of entry ]
             arrKeys.sort(function(a, b){return a - b});
 
-            console.log("after sort", arrKeys);
-            console.log("length sort", arrKeys.length);
 
             // loop over arrKeys and append to div-log the formatted data
             for (var i = arrKeys.length; i >  0; i--) {
@@ -97,19 +60,7 @@
 
             }
 
-            // for (var i = 0; i < localStorage.length; i++){
-            //     $('#log').append(localStorage.getItem(localStorage.key(i)));
-            // }
-
-
-        //     for (i = 0; i < localStorage.length; i++) {
-        //         var key  = localStorage.key[i];
-        //         var value = localStorage.getItem(key); 
-        //         console.log("oho value is:" + value);
-        //         $('#log').append(value); 
-        //     }
         }
-
 
     </script>
     
@@ -119,10 +70,5 @@
     <h1>Captain's Log</h1>
     <h3>New entry: <input type="text" id="msg" name="msg" size="30" /></h3>
     <div id="log"></div>
-    <script>
-  
-    
-    </script>
-
 </body>
 </html>

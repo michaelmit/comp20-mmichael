@@ -1,6 +1,6 @@
 body { font-family : tahoma }
 h1 { font-weight: bold; border-bottom: 2px solid gray; margin-bottom:10px}
-#log { border: 1px solid grey; min-height:20px; color : red }
+#log { border: 1px solid grey; min-height:20px; color : #B22222}
 
 body { 
     background-image: url('img/pirate.jpg');
