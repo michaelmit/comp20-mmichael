@@ -1,3 +1,10 @@
 body { font-family : tahoma }
 h1 { font-weight: bold; border-bottom: 2px solid gray; margin-bottom:10px}
-#log { border: 1px solid grey; min-height:20px; }
+#log { border: 1px solid grey; min-height:20px; color : red }
+
+body { 
+    background-image: url('img/pirate.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: right; 
+}
