@@ -8,14 +8,62 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- the jQuery file is from a Content Delivery Network (CDN) -->
+    <link rel="stylesheet" href="myStyle.css">
     <script>
-        // Your work will be done here...
+         // Your work will be done here...
+
+         var data = {};
+         var i = 0;
+         $(document).ready(load);
+         // callback executed after DOM is loaded
+
+        function load() {
+                // alert("I'm being called");
+
+                // get data fron input box
+                // $("#msg").on("input", function() {
+                //     alert($(this).val()); 
+                // });
+                $("#msg").on("keydown",function search(e) {
+                    if(e.keyCode == 13) { // enter key pressed
+                        // alert($(this).val());
+                        datetime = new Date();
+                        data[i] = $(this).val();
+                        $('#log').append("<p>"  + datetime.toString() + " - " + data[i] +  "!</p>");   // Date.now()
+                        i++;
+                    }
+
+                });
+
+
+
+                var str = $ ('#msg').val() ;
+                // $( "#log" ).text("<p>This is a test.</p>" );
+                // data = {key1:"val1", key2:"val2"};
+                for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    $('#log').append("<p>" + data[key] + "!</p>");
+                }
+                }
+
+                // $( "#log" ).text("This is a test." );
+                // $('#log').append("<p>this text was appended</p>");
+                // $('#log').append("<p>this text was appended afterwards</p>");
+                console.log(str);
+
+        } 
     </script>
+    
 </head>
 
 <body>
     <h1>Captain's Log</h1>
     <h3>New entry: <input type="text" id="msg" name="msg" size="30" /></h3>
     <div id="log"></div>
+    <script>
+  
+    
+    </script>
+
 </body>
 </html>
