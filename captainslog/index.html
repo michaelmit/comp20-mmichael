@@ -5,10 +5,9 @@
 <head>
     <meta charset="utf-8" />
     <title>Captain's Log</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="myStyle.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!-- the jQuery file is from a Content Delivery Network (CDN) -->
-    <link rel="stylesheet" href="myStyle.css">
     <script>
          // Your work will be done here...
 
@@ -29,13 +28,29 @@
                         // alert($(this).val());
                         datetime = new Date();
                         data[i] = $(this).val();
-                        $('#log').append("<p>"  + datetime.toString() + " - " + data[i] +  "!</p>");   // Date.now()
+                        // $('#log').append("<p>"  + datetime.toString() + " - " + data[i] +  "!</p>");   // Date.now()
+                        var key = Date.now();
+                        var value = "<p>"  + datetime.toString() + " - " + data[i] +  "!</p>";
+                        localStorage.setItem(key, value); 
+
+                        console.log("inside writing to LocalStorage");
                         i++;
+
+
+                        // reset div
+                        $("#log").empty();
+
+                        // append to div
+                        readFromStorage();
+
                     }
 
                 });
 
 
+
+
+                
 
                 var str = $ ('#msg').val() ;
                 // $( "#log" ).text("<p>This is a test.</p>" );
@@ -51,7 +66,41 @@
                 // $('#log').append("<p>this text was appended afterwards</p>");
                 console.log(str);
 
+
         } 
+
+        function readFromStorage() {
+            console.log("inside Retrieve from LocalStorage");
+            console.log(data);
+
+            var arrKeys;
+            
+            for (var j = 0; j < localStorage.length; j++) {
+                arrKeys[j] = localStorage.key(i);
+            }
+            // sort keys in reverse order [ Note that keys are time values of entry ]
+            arrKeys.reverse();
+
+            // loop over arrKeys and append to div-log the formatted data
+            for (var i = 0; i < arrKeys.length; i++) {
+                 $('#log').append(localStorage.getItem(arrKeys(i)));
+
+            }
+
+            // for (var i = 0; i < localStorage.length; i++){
+            //     $('#log').append(localStorage.getItem(localStorage.key(i)));
+            // }
+
+
+        //     for (i = 0; i < localStorage.length; i++) {
+        //         var key  = localStorage.key[i];
+        //         var value = localStorage.getItem(key); 
+        //         console.log("oho value is:" + value);
+        //         $('#log').append(value); 
+        //     }
+        }
+
+
     </script>
     
 </head>
