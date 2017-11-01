@@ -12,7 +12,7 @@
          // Your work will be done here...
 
          var data = {};
-         var i = 0;
+         var k = 0;
          $(document).ready(load);
          // callback executed after DOM is loaded
 
@@ -27,14 +27,14 @@
                     if(e.keyCode == 13) { // enter key pressed
                         // alert($(this).val());
                         datetime = new Date();
-                        data[i] = $(this).val();
+                        data[k] = $(this).val();
                         // $('#log').append("<p>"  + datetime.toString() + " - " + data[i] +  "!</p>");   // Date.now()
                         var key = Date.now();
-                        var value = "<p>"  + datetime.toString() + " - " + data[i] +  "!</p>";
+                        var value = "<p>"  + datetime.toString() + " - " + data[k] +  "!</p>";
                         localStorage.setItem(key, value); 
 
                         console.log("inside writing to LocalStorage");
-                        i++;
+                        k++;
 
 
                         // reset div
@@ -67,23 +67,33 @@
                 console.log(str);
 
 
-        } 
+        }
+
 
         function readFromStorage() {
             console.log("inside Retrieve from LocalStorage");
             console.log(data);
 
-            var arrKeys;
+            var arrKeys = [];
             
             for (var j = 0; j < localStorage.length; j++) {
-                arrKeys[j] = localStorage.key(i);
+                arrKeys[j] = parseInt(localStorage.key(j));
             }
-            // sort keys in reverse order [ Note that keys are time values of entry ]
-            arrKeys.reverse();
+
+
+            console.log("before sort", arrKeys);
+
+
+            console.log(arrKeys);
+            // sort keys in reverse order [ Note that key are time values of entry ]
+            arrKeys.sort(function(a, b){return a - b});
+
+            console.log("after sort", arrKeys);
+            console.log("length sort", arrKeys.length);
 
             // loop over arrKeys and append to div-log the formatted data
-            for (var i = 0; i < arrKeys.length; i++) {
-                 $('#log').append(localStorage.getItem(arrKeys(i)));
+            for (var i = arrKeys.length; i >  0; i--) {
+                 $('#log').append(localStorage.getItem( ""+arrKeys[i-1] ));
 
             }
 
