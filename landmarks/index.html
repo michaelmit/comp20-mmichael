@@ -90,7 +90,8 @@
 			// Step 1: Make an instance of XMLHttpRequest
 			request = new XMLHttpRequest();
 			// Step 2: Set up HTTP request
-			request.open("POST", "https://defense-in-derpth.herokuapp.com/sendLocation", true);
+			// request.open("POST", "https://defense-in-derpth.herokuapp.com/sendLocation", true); // Assignment 2
+			request.open("POST", "https://secret-mesa-50682.herokuapp.com/sendLocation" , true); // Assignment 3
 
             // request.send('param1=val1&param2=val2&param3=val3')
             request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
