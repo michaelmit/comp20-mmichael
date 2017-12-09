@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style_sheet.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+</head>
+<body>
+       
+
+
+
+            <br> 
+            <h2> Description of Project: </h2> <a href=#>top</a>
+            <hr>
+
+            <p>
+                The objective of this project is to test and document security flaws found in a web application 
+                developed by a colleague (Grace) as part of Assignment 2 (Client Side) and Assignment 3 (Server Side) for Comp-20 : Web Programming. 
+                My goal is to carry out a basic first-run penetration test to discover security flaws in this particular
+                implementation and to document the test results. 
+            </p>
+
+            <p>The user's application (also known hereafter as "app") consists of the following:
+                <ul>
+                <li>Server Side (Application is hosted on Heroku PaaS Cloud Application Platform) </li>
+                    <ul>
+                        <li>Server Application is written in Node/Express JS</li>
+                        <li>Database backend is MongoDB</li>
+                    </ul>
+
+                <li>Client Application is written in HTML5/CSS and uses JavaScript for client side functionality</li>
+                    <ul><li>The application (HTML Page) is served locally from a client computer</li></ul>
+
+                </ul> 
+            </p>
+
+            <h4>Test system and Tools Used:</h4>
+                
+                <ul>
+                <li>Browser details: Safari (updated to latest version)</li>
+                <li>Mac OS Terminal 2.7.3 on Mac OS X Sierra (64 bit) for running shell script and Unix Tool CURL (POST Request)</li>
+                <li>Heroku Web Tools (MongoDBLab) </li>
+                <li>Creativity and Curiosity</li>
+                </ul>
+                
+
+            <br>
+            <h2> Testing Methodology: </h2>  <a href=#>top</a>
+            <hr>
+
+            <ol>
+                    <li>Preliminary functionality testing</li>
+                    <li>Black Box testing</li>
+                    <li>White Box testing/ Code Review</li>
+                    <li>Documentation of results, snapshots as part of Project Report</li>
+            </ol>
+
+            <br>
+            <h4> Preliminary functionality test of application:</h4>
+            <p> The first stage of testing included running my colleague's application and checking if the implemented 
+                functionality is generally in line with the specification requirements of Assignment 2, 3 mentioned above. This is 
+                important because Black Box testing is done assuming the core functionality of a working app and by targeting
+                common vulnerabilities related to the working app. 
+            </p>
+            <p>
+                No major discrepancies found in app functionality. Client application (index.html) was launched locally from my computer.
+                All landmarks & user markers were displayed (this implied operational server linkup); InfoWindow popup for Maps
+                was functional. On the server side, /checkins.json and /sendLocation routes were also functional. Home Page
+                hosted by server was also functional. I used Unix Tool Curl to send POST request with valid and invalid data, and 
+                confirmed that data is being logged in MongoDB by utilizing MongLab online tool. 
+
+                <div>Server Project Host address</div>
+                <code>https://rocky-basin-93447.herokuapp.com</code> 
+            </p> 
+
+
+
+
+            <br>
+            <h2> Abstract of findings: </h2>  <a href=#>top</a>
+            <hr>
+            <p>
+            This application was found to be vulnerable to a number of security flaws. The application works as expected
+            with valid user input that complies with the specifications; however, it can be easily compromised by erronous 
+            or malicious user input which can deface or mutilate the Client Application Interface (API), and expose private data to theft.
+            No special tools are required to exploit the above vulnerabilities: command line interface (CLI) available on 
+            every computer and common web browsers are sufficient to administer the exploit payloads.
+            A key takeaway is this:
+            </p>
+
+            <blockquote>
+                    <p><q>You should never trust user input</q></p>
+                    <footer>&mdash; Ming Chow - Web Security Professor - Tufts University </footer>
+            </blockquote>
+        
+        
+            <br> 
+            <h2> Issues Found: </h2> <a href=#>top</a>
+            <hr>
+        
+            <ol>
+        
+                <!-- section -->
+                <li class="list-head">Invalid Login, Fake Data</li>
+
+                <ul style="list-style-type:circle">
+                    <li><b>Severity</b></li>
+                    <span class="highlight">Low to Moderate</span>
+                    <li><b>Affects</b></li>
+                    <span>Functionality and Credibility of application</span>
+                    <li><b>Problem Description & Test</b></li>
+                    <div> 
+                    The application checks for out-of-range values for Latitude and Longitude values, but obviously invalid 
+                    data is accepted into the database. This is not a major security issue but it affects the credibility of an app
+                    and detracts from functionality when it displays obviously faulty information. As an example, with incorrect coordinate data entered manually
+                    by using CURL within a Terminal Window, a user is placed in the middle of the ocean near Africa.
+                    Furthermore, the database is currently modifiable by any unregistered user of this app. There is no 
+                    validation of supplied login information and potentially devious agents are given full latitude (pun intended) 
+                    to wreak havoc to the database. 
+                    </div>
+
+                    <br>
+                    <div> <img src="./img/curl.png" height="100%" width="100%" alt="ALT"><div class="title">CURL POST</div> </div>
+                
+
+                    <li><b>Proof of Vulnerability</b></li>
+                    <img src="./img/invalid_data.png" height="100" width="100%" alt="Alt"><div class="title">Invalid data</div>
+                    <img src="./img/fake_location.png" height="300" width="100%" alt="Alt"><div class="title">Fake location</div>
+                    <img src="./img/invalid_data_entered.png" height="300" width="100%" alt="Alt"><div class="title">Validity check</div>
+
+                    <li><b>Resolution</b></li>
+                    <div>
+                        The application program must check whether the queried parameter <code>login, latitude, longitude</code>  is of correct type and length 
+                        before inserting into database. 
+                    </div>
+                    <div>
+                                <code>isNaN('123') //false</code>
+                                <code> isNaN('Hello') //true</code>
+                    </div>
+                    <div>Furthermore, user login information should be checked against a whitelist, then simply reject
+                        data from unauthorized logins.
+                    </div>
+
+                    <li><b>Resolution</b></li>
+                    <div>
+                        The application program must check and filter user input before inserting into database. Common escape characters could be used to negate the use of 
+                        Javascript code or modified HTML code. For example, str.match(/[\<\>]/g) would  display string with those characters and this can be useful for filtering an XSS attempt.
+                        <p>
+                        Also see link: <a href = "https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet" target = "_blank">XSS Prevention Cheat Sheet (OWASP)</a>
+                        </p>
+
+                    </div>
+
+
+                     
+                </ul>
+
+
+
+                <!-- section -->
+                <li class="list-head">Cross-Site Scripting (XSS)</li>
+
+                <ul style="list-style-type:circle">
+                    <li><b>Severity</b></li>
+                    <span class="highlight">Severe</span>
+                    <li><b>Affects</b></li>
+                    <span>Severe and adverse effect on functionality of the application</span>
+                    <span>Possible security threat by opening app to website redirection and phishing attempts</span>
+                    <li><b>Problem Description & Test</b></li>
+                    According to <b>owasp.org </b>, 
+                    Cross-Site Scripting (XSS) attacks occur when:
+                    Data enters a Web application through an untrusted source, most frequently a web request.
+                    The data is included in dynamic content that is sent to a web user without being validated for malicious content.
+                    <p>
+                    I was able to inject scripts and thereby deface the application windows, redirect the user to another website, display
+                    popup warnings etc; this was done by injecting the particular script into the login/longitude/latitude fields 
+                    in the POST queries. By redirecting the user, I gained the ability to forward the user to innocuous looking
+                    websites. Such websites could be expertly designed by an agent to use "social engineering" tricks or phishing to gain access to personal 
+                    information like user logins and passwords.
+                    </p>
+
+                    <div>
+                    See Phishing [3] and Social Engineering [5] <a href="#linksBottomOfPage">See Link</a>
+                    </div>
+
+                    <li><b>Proof of Vulnerability</b></li>
+                    <img src="./img/defaced_infowindow.png" height="300" width="100%" alt="Alt"><div class="title">Info-window</div>
+                    <img src="./img/popup_infowindow.png" height="300" width="100%" alt="Alt"><div class="title">Info-window</div>
+                    <img src="./img/alert_window.png" height="300" width="100%" alt="Alt"><div class="title">Alert Window</div>
+                    <img src="./img/redirect.png" height="100%" width="100%" alt="Alt"><div class="title">Redirect</div>
+
+                    See example of phishing website <a href = "http://pon.net/phishing/" target = "_blank">Phishing website</a>
+
+                </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+                <!-- section -->
+        
+                <li class="list-head">Application vulnerable to data theft</li>
+
+                <ul style="list-style-type:circle">
+                    <li><b>Severity</b></li>
+                    <span class="highlight">Severe</span>
+                    <li><b>Affects</b></li>
+                    <span>All private user data stored in database is exposed to the public</span>
+                    <li><b>Problem Description & Test</b></li>
+
+                    <div> 
+                        The /checkins.json API is used to query the application for check-in information specific to a particular user.
+                        The user's login is supplied as part of a GET request query string. But, the application code 
+                        does not check for a valid string and allows MongoDB comparison queries to get through unchecked.
+                        For example, $ne selects the documents where the value of the field is not equal (i.e. !=) to the specified value. 
+                        This includes documents that do not contain the field. If I supplied an empty string for login, the [$ne] operator
+                        returns the entire private database as a JSON object to the browser for viewing. This is a massive data breach 
+                        and can be exploited easily by a malicious agent who doesn't even need to know any valid user logins. 
+                        This is also considered a privacy issue as private user data is being revealed to the public.
+                    </div>
+
+                    <div>
+                    Here is an example of one of the largest data breaches that happened to Yahoo! Inc (affected 500 Million users.)
+                    <a href="#linksBottomOfPage">See Link [4]</a>
+                    </div>
+                    <div>
+                    Infact, data breaches are an almost daily occurence on the web these days. E.g. Equifax data breach (145 Million people), 
+                    Uber data breach (57 Million Users), Ashley Madison Hack (20 Million Users and apparently many divorces).</div>
+                
+                    <li><b>Proof of Vulnerability</b></li>
+                    <img src="./img/data_theft.png" height="300" width="100%" alt = "Alt"><div class="title">Illegal Query</div>
+
+                    <img src="./img/checkins_json.png" height="100%" width="100%" alt="Alt"><div class="title">Client Code</div>
+
+                    <li><b>Resolution</b></li>
+                    <div>
+                        The application program can check whether the queried parameter <code>login</code>  is a JSON object of correct type (string)
+                        and is of correct size (not empty or null).
+                        <div>
+                        <a href = "https://stackoverflow.com/questions/154059/how-do-you-check-for-an-empty-string-in-javascript" target="_blank">Stack Overflow: Check Null String</a>
+                        </div>
+                    </div>
+
+                </ul>
+
+
+           
+ 
+                <!-- section -->
+
+                <li class="list-head">Application vulnerable to unauthorized takedown/ DDOS attack</li>
+
+                <ul style="list-style-type:circle">
+
+                <li><b>Severity</b></li>
+                <span class="highlight">Moderate to Severe</span>
+                <li><b>Affects</b></li>
+                <span>The client API. Application functionality</span>
+                <li><b>Problem Description & Test</b></li>
+                <span> 
+                    I used a bash script to inject a multiline junk input in the login-field of POST query multiple times.
+                    This faulty data was accepted by the Mongo Database. 
+                    This is a type of database injection that can be used to carry out a DDOS attack. An arbitrary large amount of data can be
+                    injected into a database millions of times, and the end-result is that the databasej
+                    server/application can slow down or worse - be shutdown. As the free version of Heroku is used in this application which 
+                    restricts storage consumption, I was hesitant to actually carry out the test as this could result in
+                    excess-use billing for the app's owner.
+                </span>
+                <img src="./img/injection_script.png" height="300" width="100%" alt="Alt"><div class="title">Bash Script</div>
+
+                For a more pertinent example, a recent DDOS attack took control of many internet connected devices and used these swarm of bots
+                to take down a security researcher's website as payback.
+                <a href="#linksBottomOfPage">See Link [1] [2] </a>
+               
+                <li><b>Proof of Vulnerability</b></li>
+                <img src="./img/mongo_takedown.png" height="100%" width="100%" alt="Alt"><div class="title">MongoLab</div>
+
+                <li><b>Resolution</b></li>
+                The main solution here is to check first and reject invalid login before proceeding to inserting into
+                the database. Also, a field length restriction for string data input can be implemented, this will
+                ignore and prevent large amounts of non-sense data being inserted.
+                </ul>
+        
+            </ol>
+
+            <br> 
+        
+        
+            <h2> Conclusions: </h2> <a href=#>top</a>
+            <hr>
+            <p>
+                This application was found to have a number of vulnerabilities mainly related to unchecked acceptance of
+                3rd party user data. Some steps that can be taken are as follows: proper checking of valid user-ids (example keeping a whitelist of authorized logins), 
+                checking data length and type for correct format, stripping special characters before storing in database. If you choose to proceed with fixing
+                and launching this application on the web, I would recommend hiring an experienced pen-tester (or me after I take
+                Mr. Ming's Security class at Tufts) for a detailed investigation that probes issues beyond user input validation. 
+            </p>
+
+
+            <br> 
+            <h2> References: </h2> <a href=#>top</a>
+            <hr>
+
+            <div id="linksBottomOfPage">
+            <b>Web articles of interest:</b>
+            <ol>
+                <li>
+                <a href = "https://en.wikipedia.org/wiki/Mirai_(malware)" target="_blank" >Mirai (malware)</a>
+                </li>
+                <li>
+                <a href = "https://en.wikipedia.org/wiki/Denial-of-service_attack" target="_blank">Denial-of-service_attack</a>
+                </li>
+                <li>
+                <a href = "http://www.phishing.org/what-is-phishing" target="_blank">What is phishing?</a>
+                </li>
+
+                <li>
+                <a href = "https://en.wikipedia.org/wiki/Yahoo!_data_breaches" target="_blank">Yahoo! Data Breach</a>
+                </li>
+
+                <li>
+                <a href = "https://en.wikipedia.org/wiki/Social_engineering_(security)" target="_blank">Social Engineering</a>
+                </li>
+
+                
+            </ol>
+            </div>
+            
+
+
+
+
+            <p><img class="float-left" src="./img/fsociety.jpg" alt="Alt"> </p>
+
+
+
+</body>
+</html>
