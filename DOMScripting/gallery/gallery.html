@@ -13,12 +13,33 @@
 </head>
 <body>
     <h1>Snapshots</h1>   
+    <div> Gracefully degrades, unobtrusive javascript</div>
     <!-- unordered list for the gallery  -->
-    <ul>
+    <ul id="image_gallery">
         <li>
             <a href="images/fireworks.jpg" title="A fireworks display">
                 <img src="images/thumbnail_fireworks.jpg" alt="Fireworks" />
+            </a>
+        </li>
+        <li>
+            <a href="images/rose.jpg" title="A Rose">
+                <img src="images/thumbnail_rose.jpg" alt="Rose" />
+            </a>    
+        </li>
+        <li>
+            <a href="images/bigben.jpg" title="The famous clock">
+              <img src="images/thumbnail_bigben.jpg" alt="Big Ben" />
+            </a>
+        </li>
+        <li>
+            <a href="images/coffee.jpg" title="A cup of black coffee" >
+              <img src="images/thumbnail_coffee.jpg" alt="Coffee" />
+            </a>
         </li>
     </ul>
+    <!-- Placeholder for gallery -->
+    <img id="placeholder" src="images/placeholder.gif" alt="my image gallery" /> 
+    <p id="description"> Select an image </p>
+
 </body>
 </html>
